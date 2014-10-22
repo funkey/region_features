@@ -2,6 +2,7 @@
 #define REGION_FEATURES_STATISTICS_H__
 
 #include <vigra/accumulator.hxx>
+#include "FeatureMap.h"
 
 namespace region_features {
 
@@ -13,7 +14,7 @@ public:
 	static void fill(
 			const vigra::MultiArrayView<N, ValueType>& image,
 			const vigra::MultiArrayView<N, LabelType>& labels,
-			std::map<LabelType, std::vector<double> >& features) {
+			FeatureMap<LabelType>&                     features) {
 
 		using namespace vigra;
 		using namespace vigra::acc;
@@ -26,17 +27,17 @@ public:
 				Select<
 						DataArg<1>,
 						LabelArg<2>,
-						Count,			// size
-						Sum,			// sum of intensity
-						Mean,			// mean intensity
-						Variance,		// variance of intensite
-						Skewness,		// ...
-						Kurtosis,		// ...
-						Histogram,		// histogram on intensities
-						Quantiles,      // 0, 10, 25, 50, 75, 90, 100
-						Coord<Variance>,// variance of cooridinates
-						Coord<Skewness>,// ...
-						Coord<Kurtosis>	// ...
+						Count,            // size
+						Sum,              // sum of intensity
+						Mean,             // mean intensity
+						Variance,         // variance of intensity
+						Skewness,         // ...
+						Kurtosis,         // ...
+						Histogram,        // histogram on intensities
+						Quantiles,        // 0, 10, 25, 50, 75, 90, 100
+						Coord<Variance>,  // variance of cooridinates
+						Coord<Skewness>,  // ...
+						Coord<Kurtosis>   // ...
 				>
 		> accumulator;
 
@@ -51,28 +52,26 @@ public:
 
 		extractFeatures(image, labels, accumulator);
 
-		std::cout << "extracted features for " << accumulator.regionCount() << " regions" << std::endl;
-
 		for (LabelType i = 1;; i++) {
 
-			features[i].push_back(get<Count>(accumulator, i));
-			features[i].push_back(get<Sum>(accumulator, i));
-			features[i].push_back(get<Mean>(accumulator, i));
-			features[i].push_back(get<Variance>(accumulator, i));
-			features[i].push_back(get<Skewness>(accumulator, i));
-			features[i].push_back(get<Kurtosis>(accumulator, i));
+			features.safeAdd(i, get<Count>(accumulator, i));
+			features.safeAdd(i, get<Sum>(accumulator, i));
+			features.safeAdd(i, get<Mean>(accumulator, i));
+			features.safeAdd(i, get<Variance>(accumulator, i));
+			features.safeAdd(i, get<Skewness>(accumulator, i));
+			features.safeAdd(i, get<Kurtosis>(accumulator, i));
 
 			for (unsigned int j = 0; j < 20; j++)
-				features[i].push_back(get<Histogram>(accumulator, i)[j]);
+				features.safeAdd(i, get<Histogram>(accumulator, i)[j]);
 			for (unsigned int j = 0; j < 7; j++)
-				features[i].push_back(get<Quantiles>(accumulator, i)[j]);
+				features.safeAdd(i, get<Quantiles>(accumulator, i)[j]);
 
 			for (unsigned int d = 0; d < N; d++)
-				features[i].push_back(get<Coord<Variance> >(accumulator, i)[d]);
+				features.safeAdd(i, get<Coord<Variance> >(accumulator, i)[d]);
 			for (unsigned int d = 0; d < N; d++)
-				features[i].push_back(get<Coord<Skewness> >(accumulator, i)[d]);
+				features.safeAdd(i, get<Coord<Skewness> >(accumulator, i)[d]);
 			for (unsigned int d = 0; d < N; d++)
-				features[i].push_back(get<Coord<Kurtosis> >(accumulator, i)[d]);
+				features.safeAdd(i, get<Coord<Kurtosis> >(accumulator, i)[d]);
 
 			if (i == accumulator.maxRegionLabel())
 				break;

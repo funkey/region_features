@@ -1,7 +1,6 @@
 #ifndef REGION_FEATURES_REGION_FEATURES_H__
 #define REGION_FEATURES_REGION_FEATURES_H__
 
-#include <map>
 #include <vector>
 #include <vigra/multi_array.hxx>
 #include "Statistics.h"
@@ -55,7 +54,7 @@ private:
 	// convenience typedefs
 	typedef region_features::Statistics<N, ValueType, LabelType> Statistics;
 
-	std::map<LabelType, std::vector<double> > _features;
+	FeatureMap<LabelType> _features;
 };
 
 ////////////////////
