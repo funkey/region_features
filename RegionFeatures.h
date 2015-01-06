@@ -35,8 +35,8 @@ public:
 	 *              available features will be computed.
 	 */
 	void computeFeatures(
-			vigra::MultiArrayView<N, ValueType> image,
-			vigra::MultiArrayView<N, LabelType> labels,
+			const vigra::MultiArrayView<N, ValueType>& image,
+			const vigra::MultiArrayView<N, LabelType>& labels,
 			const Selection& selection = Selection());
 
 	/**
@@ -64,8 +64,8 @@ private:
 template <unsigned int N, typename ValueType, typename LabelType>
 void
 RegionFeatures<N, ValueType, LabelType>::computeFeatures(
-		vigra::MultiArrayView<N, ValueType> image,
-		vigra::MultiArrayView<N, LabelType> labels,
+		const vigra::MultiArrayView<N, ValueType>& image,
+		const vigra::MultiArrayView<N, LabelType>& labels,
 		const Selection& /*selection*/) {
 
 	_features.clear();
