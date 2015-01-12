@@ -49,12 +49,25 @@ public:
 	 */
 	const std::vector<double>& getFeatures(LabelType region) { return _features[region]; }
 
+	/**
+	 * Get access to the whole feature map.
+	 */
+	const FeatureMap<LabelType>& getFeatureMap() { return _features; }
+
+	/**
+	 * Get the names of the features, i.e., the components of the feature 
+	 * vectors.
+	 */
+	const std::vector<std::string> getFeatureNames() { return _featureNames; }
+
 private:
 
 	// convenience typedefs
 	typedef region_features::Statistics<N, ValueType, LabelType> Statistics;
 
 	FeatureMap<LabelType> _features;
+
+	std::vector<std::string> _featureNames;
 };
 
 ////////////////////
@@ -74,7 +87,8 @@ RegionFeatures<N, ValueType, LabelType>::computeFeatures(
 	RegionFeatures::Statistics::fill(
 			image,
 			labels,
-			_features);
+			_features,
+			_featureNames);
 }
 
 #endif // REGION_FEATURES_REGION_FEATURES_H__

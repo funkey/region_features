@@ -14,7 +14,8 @@ public:
 	static void fill(
 			const vigra::MultiArrayView<N, ValueType>& image,
 			const vigra::MultiArrayView<N, LabelType>& labels,
-			FeatureMap<LabelType>&                     features) {
+			FeatureMap<LabelType>&                     features,
+			std::vector<std::string>&                  featureNames) {
 
 		using namespace vigra;
 		using namespace vigra::acc;
@@ -41,9 +42,30 @@ public:
 				>
 		> accumulator;
 
+		const int NumHistogramBins = 20;
+
+		featureNames.push_back("size");
+		featureNames.push_back("sum intensity");
+		featureNames.push_back("mean intensity");
+		featureNames.push_back("variance intensity");
+		featureNames.push_back("skewness intensity");
+		featureNames.push_back("kurtosis intensity");
+		for (int i = 0; i < NumHistogramBins; i++)
+			featureNames.push_back(std::string("intensity histogram ") + boost::lexical_cast<std::string>(i));
+		featureNames.push_back("intensity quantile 0");
+		featureNames.push_back("intensity quantile 10");
+		featureNames.push_back("intensity quantile 25");
+		featureNames.push_back("intensity quantile 50");
+		featureNames.push_back("intensity quantile 75");
+		featureNames.push_back("intensity quantile 90");
+		featureNames.push_back("intensity quantile 100");
+		featureNames.push_back("variance coordinates");
+		featureNames.push_back("skewness coordinates");
+		featureNames.push_back("kurtosis coordinates");
+
 		// set the histogram options
 		vigra::HistogramOptions histogramOptions;
-		histogramOptions = histogramOptions.setBinCount(20); 
+		histogramOptions = histogramOptions.setBinCount(NumHistogramBins); 
 		histogramOptions = histogramOptions.setMinMax(0.0, 1.0); 
 		accumulator.setHistogramOptions(histogramOptions);
 
