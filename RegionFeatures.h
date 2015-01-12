@@ -13,61 +13,60 @@ class RegionFeatures {
 
 public:
 
-	/**
-	 * A selection of the features to compute.
-	 */
-	struct Selection {
+	// convenience typedefs
+	typedef region_features::Statistics<N, ValueType, LabelType> Statistics;
 
+	struct Parameters {
+
+		Parameters() :
+			computeStatistics(true) {}
+
+		bool computeStatistics;
+
+		typename Statistics::Parameters statisticsParameters;
 	};
 
 	/**
-	 * Compute region features on the given image. Regions are identified by 
-	 * having the same label in a separate view.
+	 * Create a new region feature extraction object.
 	 *
 	 * @param image
 	 *              The raw image.
 	 *
 	 * @param labels
-	 *              A label image that identifies regions.
-	 *
-	 * @param selection
-	 *              A selection of features to compute. If not given, all 
-	 *              available features will be computed.
+	 *              A label image that identifies regions: All voxels with the 
+	 *              same label are considered as one region.
 	 */
-	void computeFeatures(
-			const vigra::MultiArrayView<N, ValueType>& image,
-			const vigra::MultiArrayView<N, LabelType>& labels,
-			const Selection& selection = Selection());
+	RegionFeatures(
+			vigra::MultiArrayView<N, ValueType> image,
+			vigra::MultiArrayView<N, LabelType> labels,
+			const Parameters& parameters = Parameters()) :
+		_image(image),
+		_labels(labels),
+		_parameters(parameters) {}
 
 	/**
-	 * Get the computed features for the region with the given label.
+	 * Compute region features and store them in the given feature map. The 
+	 * feature map has to model
 	 *
-	 * @param region
-	 *              The label of the region.
+	 *   featureMap.append(label, value)
 	 *
-	 * @return A vector of all features for this region.
+	 * where label is a LabelType (the label of a region in the label image), 
+	 * and value is a ValueType.
 	 */
-	const std::vector<double>& getFeatures(LabelType region) { return _features[region]; }
-
-	/**
-	 * Get access to the whole feature map.
-	 */
-	const FeatureMap<LabelType>& getFeatureMap() { return _features; }
+	template <typename FeatureMap>
+	void fill(FeatureMap& featureMap);
 
 	/**
 	 * Get the names of the features, i.e., the components of the feature 
 	 * vectors.
 	 */
-	const std::vector<std::string> getFeatureNames() { return _featureNames; }
+	std::vector<std::string> getFeatureNames();
 
 private:
 
-	// convenience typedefs
-	typedef region_features::Statistics<N, ValueType, LabelType> Statistics;
-
-	FeatureMap<LabelType> _features;
-
-	std::vector<std::string> _featureNames;
+	vigra::MultiArrayView<N, ValueType> _image;
+	vigra::MultiArrayView<N, LabelType> _labels;
+	Parameters _parameters;
 };
 
 ////////////////////
@@ -75,20 +74,36 @@ private:
 ////////////////////
 
 template <unsigned int N, typename ValueType, typename LabelType>
+template <typename FeatureMap>
 void
-RegionFeatures<N, ValueType, LabelType>::computeFeatures(
-		const vigra::MultiArrayView<N, ValueType>& image,
-		const vigra::MultiArrayView<N, LabelType>& labels,
-		const Selection& /*selection*/) {
-
-	_features.clear();
+RegionFeatures<N, ValueType, LabelType>::fill(
+		FeatureMap& featureMap) {
 
 	// if statistics are selected
-	RegionFeatures::Statistics::fill(
-			image,
-			labels,
-			_features,
-			_featureNames);
+	if (_parameters.computeStatistics) {
+
+		Statistics statistics(_parameters.statisticsParameters);
+		statistics.fill(
+				_image,
+				_labels,
+				featureMap);
+	}
+}
+
+template <unsigned int N, typename ValueType, typename LabelType>
+std::vector<std::string>
+RegionFeatures<N, ValueType, LabelType>::getFeatureNames() {
+
+	std::vector<std::string> names;
+
+	// if statistics are selected
+	if (_parameters.computeStatistics) {
+
+		Statistics statistics(_parameters.statisticsParameters);
+		statistics.getFeatureNames(names);
+	}
+
+	return names;
 }
 
 #endif // REGION_FEATURES_REGION_FEATURES_H__

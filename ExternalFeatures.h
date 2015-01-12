@@ -41,7 +41,7 @@ private:
 	void addFeatures(LabelType i) {
 
 		// add each feature
-		//features.safeAdd(i, f);
+		//features.append(i, f);
 	}
 };
 
