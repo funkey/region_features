@@ -10,9 +10,12 @@
 template <typename LabelType>
 class FeatureMap {
 
-	typedef std::vector<double> features_type;
-
 public:
+
+	typedef std::vector<double>                       features_type;
+	typedef std::map<LabelType, features_type>        feature_map_type;
+	typedef typename feature_map_type::iterator       iterator;
+	typedef typename feature_map_type::const_iterator const_iterator;
 
 	/**
 	 * Clear the feature map.
@@ -40,6 +43,14 @@ public:
 
 		_features[i].push_back(feature);
 	}
+
+	/**
+	 * Direct access to the map from labels to feature vectors.
+	 */
+	iterator begin() { return _features.begin(); }
+	const_iterator begin() const { return _features.begin(); }
+	iterator end() { return _features.end(); }
+	const_iterator end() const { return _features.end(); }
 
 private:
 
