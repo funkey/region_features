@@ -1,6 +1,7 @@
 #ifndef REGION_FEATURES_STATISTICS_H__
 #define REGION_FEATURES_STATISTICS_H__
 
+#include <boost/lexical_cast.hpp>
 #include <vigra/accumulator.hxx>
 
 namespace region_features {
