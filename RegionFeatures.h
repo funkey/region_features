@@ -4,6 +4,7 @@
 #include <vector>
 #include <vigra/multi_array.hxx>
 #include "Statistics.h"
+#include "Regionprops.h"
 
 /**
  * Class to compute and store selected region features for a labeled image.
@@ -15,15 +16,19 @@ public:
 
 	// convenience typedefs
 	typedef region_features::Statistics<N, ValueType, LabelType> Statistics;
+	typedef region_features::Regionprops<N, ValueType, LabelType> Regionprops;
 
 	struct Parameters {
 
 		Parameters() :
-			computeStatistics(true) {}
+			computeStatistics(true),
+		    computeRegionprops(false) {}
 
 		bool computeStatistics;
+		bool computeRegionprops;
 
 		typename Statistics::Parameters statisticsParameters;
+		typename Regionprops::Parameters regionpropsParameters;
 	};
 
 	/**
@@ -88,6 +93,16 @@ RegionFeatures<N, ValueType, LabelType>::fill(
 				_labels,
 				featureMap);
 	}
+
+	// if regionprops is selected
+	if (_parameters.computeRegionprops) {
+
+		Regionprops regionprops(_parameters.regionpropsParameters);
+		regionprops.fill(
+				_image,
+				_labels,
+				featureMap);
+	}
 }
 
 template <unsigned int N, typename ValueType, typename LabelType>
@@ -101,6 +116,13 @@ RegionFeatures<N, ValueType, LabelType>::getFeatureNames() {
 
 		Statistics statistics(_parameters.statisticsParameters);
 		statistics.getFeatureNames(names);
+	}
+
+	// if regionprops is selected
+	if (_parameters.computeRegionprops) {
+
+		Regionprops regionprops(_parameters.regionpropsParameters);
+		regionprops.getFeatureNames(names);
 	}
 
 	return names;
