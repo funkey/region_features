@@ -21,7 +21,7 @@ public:
 
 		int numAnglePoints;
 		double contourVecAsArcSegmentRatio;
-		const int numAngleHistBins;
+		int numAngleHistBins;
 	};
 
 	Regionprops(const Parameters& parameters = Parameters()) :
@@ -70,7 +70,7 @@ public:
 				double arcDist = 1.0/_parameters.numAnglePoints*_parameters.contourVecAsArcSegmentRatio;
 				double avgAngle = 0;
 				//const int numAngleHistBins = 16;
-				int angleHist[_parameters.numAngleHistBins] = {0};
+				std::vector<int> angleHist(_parameters.numAngleHistBins, 0);
 
 				//assumes counter clockwise order
 				for (int ithAnglePoint=0; ithAnglePoint<_parameters.numAnglePoints; ithAnglePoint++) {
