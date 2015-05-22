@@ -115,7 +115,7 @@ public:
 		}
 	}
 
-	void getFeatureNames(std::vector<std::string> featureNames) {
+	void getFeatureNames(std::vector<std::string>& featureNames) {
 
         if (N == 2) {
         	featureNames.push_back("2D region pointyness");
@@ -171,6 +171,34 @@ public:
 private:
 
 	Parameters _parameters;
+};
+
+template <typename ValueType, typename LabelType>
+class Regionprops<3, ValueType, LabelType> {
+
+public:
+
+	struct Parameters {
+
+		Parameters() :
+			numAnglePoints(50),
+			contourVecAsArcSegmentRatio(0.1),
+			numAngleHistBins(16) {}
+
+		int numAnglePoints;
+		double contourVecAsArcSegmentRatio;
+		int numAngleHistBins;
+	};
+
+	Regionprops(const Parameters& /*parameters*/ = Parameters()) {}
+
+	template <typename FeatureMap>
+	void fill(
+			const vigra::MultiArrayView<3, ValueType>& /*image*/,
+			const vigra::MultiArrayView<3, LabelType>& /*labels*/,
+			FeatureMap&                                /*features*/) {}
+
+	void getFeatureNames(std::vector<std::string>& /*featureNames*/) {}
 };
 
 } // namespace region_features

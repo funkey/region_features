@@ -93,8 +93,11 @@ public:
 			features.append(i, get<Skewness>(accumulator, i));
 			features.append(i, get<Kurtosis>(accumulator, i));
 
-			for (unsigned int j = 0; j < 20; j++)
+			features.append(i, getAccumulator<Histogram>(accumulator, i).left_outliers);
+			for (unsigned int j = 0; j < _parameters.numHistogramBins; j++)
 				features.append(i, get<Histogram>(accumulator, i)[j]);
+			features.append(i, getAccumulator<Histogram>(accumulator, i).right_outliers);
+
 			for (unsigned int j = 0; j < 7; j++)
 				features.append(i, get<Quantiles>(accumulator, i)[j]);
 
@@ -111,7 +114,7 @@ public:
 		}
 	}
 
-	void getFeatureNames(std::vector<std::string> featureNames) {
+	void getFeatureNames(std::vector<std::string>& featureNames) {
 
 		featureNames.push_back("size");
 		featureNames.push_back("sum intensity");
@@ -119,8 +122,10 @@ public:
 		featureNames.push_back("variance intensity");
 		featureNames.push_back("skewness intensity");
 		featureNames.push_back("kurtosis intensity");
+		featureNames.push_back("intensity histogram right outliers");
 		for (int i = 0; i < _parameters.numHistogramBins; i++)
 			featureNames.push_back(std::string("intensity histogram ") + boost::lexical_cast<std::string>(i));
+		featureNames.push_back("intensity histogram left outliers");
 		featureNames.push_back("intensity quantile 0");
 		featureNames.push_back("intensity quantile 10");
 		featureNames.push_back("intensity quantile 25");
