@@ -122,7 +122,7 @@ public:
 
 				////////////////////////////////////
 
-				features.append(i, avgAngle);
+				features.append(i, avgAngle/_parameters.numAnglePoints);
 				for (unsigned int d = 0; d < _parameters.numAngleHistBins; d++)
 					features.append(i, angleHist[d]);
 				features.append(i, get<RegionCircularity>(accumulator, i));
