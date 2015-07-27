@@ -5,10 +5,28 @@
 #include <vigra/accumulator.hxx>
 #include <vigra/polygon.hxx>
 
+// Workaround: call to extractFeatures with MultiArrayViews of same type is 
+// ambiguous.
+namespace vigra {
+
+template <unsigned int N, class T, class S,
+          class ACCUMULATOR>
+void extractFeatures(MultiArrayView<N, T, S> const & a1, 
+                     MultiArrayView<N, T, S> const & a2, 
+                     ACCUMULATOR & a)
+{
+    typedef typename CoupledIteratorType<N, T, T>::type Iterator;
+    Iterator start = createCoupledIterator(a1, a2),
+             end   = start.getEndIterator();
+    extractFeatures(start, end, a);
+}
+
+} // namespace vigra
+
 namespace region_features {
 
 template <unsigned int N, typename ValueType, typename LabelType>
-class Regionprops {
+class ShapeFeatures {
 
 public:
 
@@ -24,12 +42,11 @@ public:
 		int numAngleHistBins;
 	};
 
-	Regionprops(const Parameters& parameters = Parameters()) :
+	ShapeFeatures(const Parameters& parameters = Parameters()) :
 		_parameters(parameters) {}
 
 	template <typename FeatureMap>
 	void fill(
-			const vigra::MultiArrayView<N, ValueType>& image,
 			const vigra::MultiArrayView<N, LabelType>& labels,
 			FeatureMap&                                features) {
 
@@ -42,7 +59,7 @@ public:
 		typedef Polygon<>::Point	Point;
 
 		AccumulatorChainArray<
-				CoupledArrays<N, ValueType, LabelType>,
+				CoupledArrays<N, LabelType, LabelType>,
 				Select<
 						DataArg<1>,
 						LabelArg<2>,
@@ -55,7 +72,9 @@ public:
 		// don't compute features on the background
 		accumulator.ignoreLabel(0);
 
-		extractFeatures(image, labels, accumulator);
+		// For our features, we don't need a data array. However, vigra requires 
+		// us to pass one, so we pass the labels twice.
+		extractFeatures(labels, labels, accumulator);
 
 		for (LabelType i = 1;; i++) {
 			if (N == 2) {
@@ -118,7 +137,9 @@ public:
 	void getFeatureNames(std::vector<std::string>& featureNames) {
 
         if (N == 2) {
-        	featureNames.push_back("2D region pointyness");
+			featureNames.push_back("average contour angle");
+			for (unsigned int d = 0; d < _parameters.numAngleHistBins; d++)
+				featureNames.push_back(std::string("contour angle historgram ") + boost::lexical_cast<std::string>(d));
 		    featureNames.push_back("2D region circularity");
 		    featureNames.push_back("2D region eccentricity");
 		} 
@@ -174,7 +195,7 @@ private:
 };
 
 template <typename ValueType, typename LabelType>
-class Regionprops<3, ValueType, LabelType> {
+class ShapeFeatures<3, ValueType, LabelType> {
 
 public:
 
@@ -190,11 +211,10 @@ public:
 		int numAngleHistBins;
 	};
 
-	Regionprops(const Parameters& /*parameters*/ = Parameters()) {}
+	ShapeFeatures(const Parameters& /*parameters*/ = Parameters()) {}
 
 	template <typename FeatureMap>
 	void fill(
-			const vigra::MultiArrayView<3, ValueType>& /*image*/,
 			const vigra::MultiArrayView<3, LabelType>& /*labels*/,
 			FeatureMap&                                /*features*/) {}
 

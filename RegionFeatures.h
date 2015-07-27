@@ -4,7 +4,7 @@
 #include <vector>
 #include <vigra/multi_array.hxx>
 #include "Statistics.h"
-#include "Regionprops.h"
+#include "ShapeFeatures.h"
 
 /**
  * Class to compute and store selected region features for a labeled image.
@@ -16,19 +16,19 @@ public:
 
 	// convenience typedefs
 	typedef region_features::Statistics<N, ValueType, LabelType> Statistics;
-	typedef region_features::Regionprops<N, ValueType, LabelType> Regionprops;
+	typedef region_features::ShapeFeatures<N, ValueType, LabelType> ShapeFeatures;
 
 	struct Parameters {
 
 		Parameters() :
 			computeStatistics(true),
-		    computeRegionprops(false) {}
+		    computeShapeFeatures(false) {}
 
 		bool computeStatistics;
-		bool computeRegionprops;
+		bool computeShapeFeatures;
 
 		typename Statistics::Parameters statisticsParameters;
-		typename Regionprops::Parameters regionpropsParameters;
+		typename ShapeFeatures::Parameters shapeFeaturesParameters;
 	};
 
 	/**
@@ -46,6 +46,21 @@ public:
 			vigra::MultiArrayView<N, LabelType> labels,
 			const Parameters& parameters = Parameters()) :
 		_image(image),
+		_labels(labels),
+		_parameters(parameters) {}
+
+	/**
+	 * Create a new region feature extraction object. This constructor does not 
+	 * set an intensity image, hence only features that don't need those can be 
+	 * extracted (like shape features).
+	 *
+	 * @param labels
+	 *              A label image that identifies regions: All voxels with the 
+	 *              same label are considered as one region.
+	 */
+	RegionFeatures(
+			vigra::MultiArrayView<N, LabelType> labels,
+			const Parameters& parameters = Parameters()) :
 		_labels(labels),
 		_parameters(parameters) {}
 
@@ -94,12 +109,11 @@ RegionFeatures<N, ValueType, LabelType>::fill(
 				featureMap);
 	}
 
-	// if regionprops is selected
-	if (_parameters.computeRegionprops) {
+	// if hape features are selected
+	if (_parameters.computeShapeFeatures) {
 
-		Regionprops regionprops(_parameters.regionpropsParameters);
-		regionprops.fill(
-				_image,
+		ShapeFeatures shapeFeatures(_parameters.shapeFeaturesParameters);
+		shapeFeatures.fill(
 				_labels,
 				featureMap);
 	}
@@ -118,11 +132,11 @@ RegionFeatures<N, ValueType, LabelType>::getFeatureNames() {
 		statistics.getFeatureNames(names);
 	}
 
-	// if regionprops is selected
-	if (_parameters.computeRegionprops) {
+	// if shapeFeatures is selected
+	if (_parameters.computeShapeFeatures) {
 
-		Regionprops regionprops(_parameters.regionpropsParameters);
-		regionprops.getFeatureNames(names);
+		ShapeFeatures shapeFeatures(_parameters.shapeFeaturesParameters);
+		shapeFeatures.getFeatureNames(names);
 	}
 
 	return names;
