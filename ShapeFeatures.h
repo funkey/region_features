@@ -25,7 +25,7 @@ void extractFeatures(MultiArrayView<N, T, S> const & a1,
 
 namespace region_features {
 
-template <unsigned int N, typename ValueType, typename LabelType>
+template <unsigned int N, typename LabelType>
 class ShapeFeatures {
 
 public:
@@ -194,8 +194,8 @@ private:
 	Parameters _parameters;
 };
 
-template <typename ValueType, typename LabelType>
-class ShapeFeatures<3, ValueType, LabelType> {
+template <typename LabelType>
+class ShapeFeatures<3, LabelType> {
 
 public:
 

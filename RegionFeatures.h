@@ -16,7 +16,7 @@ public:
 
 	// convenience typedefs
 	typedef region_features::Statistics<N, ValueType, LabelType> Statistics;
-	typedef region_features::ShapeFeatures<N, ValueType, LabelType> ShapeFeatures;
+	typedef region_features::ShapeFeatures<N, LabelType>         ShapeFeatures;
 
 	struct Parameters {
 
