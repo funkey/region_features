@@ -1,1 +1,1 @@
-define_module(region_features OBJECT LINKS vigra-git)
+define_module(region_features HEADER LINKS vigra-git)
