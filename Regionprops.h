@@ -118,7 +118,9 @@ public:
 	void getFeatureNames(std::vector<std::string>& featureNames) {
 
         if (N == 2) {
-        	featureNames.push_back("2D region pointyness");
+			featureNames.push_back("2D region pointyness average angle");
+			for (unsigned int d = 0; d < _parameters.numAngleHistBins; d++)
+				featureNames.push_back(std::string("2D region pointyness histogram ") + boost::lexical_cast<std::string>(d));
 		    featureNames.push_back("2D region circularity");
 		    featureNames.push_back("2D region eccentricity");
 		} 

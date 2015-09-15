@@ -122,10 +122,10 @@ public:
 		featureNames.push_back("variance intensity");
 		featureNames.push_back("skewness intensity");
 		featureNames.push_back("kurtosis intensity");
-		featureNames.push_back("intensity histogram right outliers");
+		featureNames.push_back("intensity histogram left outliers");
 		for (int i = 0; i < _parameters.numHistogramBins; i++)
 			featureNames.push_back(std::string("intensity histogram ") + boost::lexical_cast<std::string>(i));
-		featureNames.push_back("intensity histogram left outliers");
+		featureNames.push_back("intensity histogram right outliers");
 		featureNames.push_back("intensity quantile 0");
 		featureNames.push_back("intensity quantile 10");
 		featureNames.push_back("intensity quantile 25");
