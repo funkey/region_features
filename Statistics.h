@@ -114,32 +114,32 @@ public:
 		}
 	}
 
-	void getFeatureNames(std::vector<std::string>& featureNames) {
+	void getFeatureNames(std::vector<std::string>& featureNames, std::string prefix) {
 
-		featureNames.push_back("size");
-		featureNames.push_back("sum intensity");
-		featureNames.push_back("mean intensity");
-		featureNames.push_back("variance intensity");
-		featureNames.push_back("skewness intensity");
-		featureNames.push_back("kurtosis intensity");
-		featureNames.push_back("intensity histogram right outliers");
+		featureNames.push_back(prefix + "size");
+		featureNames.push_back(prefix + "sum intensity");
+		featureNames.push_back(prefix + "mean intensity");
+		featureNames.push_back(prefix + "variance intensity");
+		featureNames.push_back(prefix + "skewness intensity");
+		featureNames.push_back(prefix + "kurtosis intensity");
+		featureNames.push_back(prefix + "intensity histogram right outliers");
 		for (int i = 0; i < _parameters.numHistogramBins; i++)
-			featureNames.push_back(std::string("intensity histogram ") + boost::lexical_cast<std::string>(i));
-		featureNames.push_back("intensity histogram left outliers");
-		featureNames.push_back("intensity quantile 0");
-		featureNames.push_back("intensity quantile 10");
-		featureNames.push_back("intensity quantile 25");
-		featureNames.push_back("intensity quantile 50");
-		featureNames.push_back("intensity quantile 75");
-		featureNames.push_back("intensity quantile 90");
-		featureNames.push_back("intensity quantile 100");
+			featureNames.push_back(prefix + std::string("intensity histogram ") + boost::lexical_cast<std::string>(i));
+		featureNames.push_back(prefix + "intensity histogram left outliers");
+		featureNames.push_back(prefix + "intensity quantile 0");
+		featureNames.push_back(prefix + "intensity quantile 10");
+		featureNames.push_back(prefix + "intensity quantile 25");
+		featureNames.push_back(prefix + "intensity quantile 50");
+		featureNames.push_back(prefix + "intensity quantile 75");
+		featureNames.push_back(prefix + "intensity quantile 90");
+		featureNames.push_back(prefix + "intensity quantile 100");
 		if (_parameters.computeCoordinateStatistics) {
 			for (int d = 0; d < N; d++)
-				featureNames.push_back(std::string("variance coordinates ") + boost::lexical_cast<std::string>(d));
+				featureNames.push_back(prefix + std::string("variance coordinates ") + boost::lexical_cast<std::string>(d));
 			for (int d = 0; d < N; d++)
-				featureNames.push_back(std::string("skewness coordinates ") + boost::lexical_cast<std::string>(d));
+				featureNames.push_back(prefix + std::string("skewness coordinates ") + boost::lexical_cast<std::string>(d));
 			for (int d = 0; d < N; d++)
-				featureNames.push_back(std::string("kurtosis coordinates ") + boost::lexical_cast<std::string>(d));
+				featureNames.push_back(prefix + std::string("kurtosis coordinates ") + boost::lexical_cast<std::string>(d));
 		}
 	}
 
